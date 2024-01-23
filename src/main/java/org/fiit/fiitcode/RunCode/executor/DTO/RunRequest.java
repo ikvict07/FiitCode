@@ -6,5 +6,7 @@ import org.fiit.fiitcode.RunCode.executor.Enums.SupportedLanguages;
 @Data
 public class RunRequest {
     SupportedLanguages language;
-    String fileName;
+    String aisId;
+    String taskId;
+    String code;
 }

@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 public class ContainerFactory {
     public static Container createContainer(RunRequest request) {
         return switch (request.getLanguage()) {
-            case Python -> new PythonContainer();
-            case Cpp -> new CppContainer();
+            case Python -> new PythonContainer(Container.generateContainerName());
+            case Cpp -> new CppContainer(Container.generateContainerName());
             default -> throw new IllegalArgumentException("Unsupported language");
         };
     }

@@ -1,8 +1,21 @@
 package org.fiit.fiitcode.RunCode.executor.service;
 
 import java.io.IOException;
+import java.util.List;
 
 public class PythonContainer implements Container {
+
+    public final String containerName;
+
+    public PythonContainer(String containerName) {
+        this.containerName = containerName;
+    }
+
+    @Override
+    public void setFileName(String fileName) {
+
+    }
+
     @Override
     public void runContainer() {
 
@@ -19,12 +32,12 @@ public class PythonContainer implements Container {
     }
 
     @Override
-    public void runCode() throws IOException, InterruptedException {
+    public void runCode(List<String> inputs) throws IOException, InterruptedException {
 
     }
 
     @Override
-    public void sendCode() throws IOException, InterruptedException {
+    public void sendCode(String fileCodeName) throws IOException, InterruptedException {
 
     }
 }
