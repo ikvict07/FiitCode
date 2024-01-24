@@ -16,7 +16,9 @@ public interface Container {
 
     void setContainerRunning(boolean containerRunning);
 
-    void runCode(List<String> inputs) throws IOException, InterruptedException;
+    void runCode(String inputFileName) throws IOException, InterruptedException;
 
     void sendCode(String fileName) throws IOException, InterruptedException;
+
+    void sendFile(String fileName, String extension, String dir) throws IOException, InterruptedException;
 }

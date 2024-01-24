@@ -24,14 +24,4 @@ public class ReceiverController {
         executor.execute(runRequest);
         return ResponseEntity.ok().build();
     }
-
-    @PostMapping("/save-code")
-    public ResponseEntity<?> saveCode(@RequestBody CodeRequest codeRequest) {
-        generateName(); //TODO :save code
-        return ResponseEntity.ok().build();
-    }
-
-    private String generateName() {
-        return "container_" + System.currentTimeMillis() + new Random().nextInt(1000);
-    }
 }

@@ -5,19 +5,28 @@ import org.fiit.fiitcode.RunCode.executor.DTO.RunRequest;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class Executor {
     private static final String path = "C:\\Users\\ikvict\\FiitCode\\src\\main\\resources";
+    private String codeFileName;
+
     public void execute(RunRequest request) {
         Container container = createContainer(request);
+        try {
+            codeFileName = createCodeFile(request).orElseThrow(() -> new RuntimeException("Code file name is not set"));
+            container.setFileName(codeFileName);
+            runCodeForEachTest(request, container, findInputFiles(request));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Container createContainer(RunRequest request) {
@@ -32,22 +41,19 @@ public class Executor {
         return container;
     }
 
-    public Map<Integer, List<String>> findInputFiles(RunRequest request) throws IOException {
-        int index = 0;
+    public List<String> findInputFiles(RunRequest request) {
+        String path = Executor.path + "/inputs/" + request.getTaskId() + "/";
+        List<String> fileNames = new ArrayList<>();
 
-        String path = "/";
-        String fileName = "input_" + request.getTaskId() + "_" + index + ".txt";
-
-        Map<Integer, List<String>> inputFiles = new HashMap<>();
-        while (Files.exists(Paths.get(path + fileName))) {
-            index++;
-
-            List<String> lines = Files.readAllLines(Paths.get(path + fileName));
-
-            inputFiles.put(index, lines);
-            fileName = "input_" + request.getTaskId() + "_" + index + ".txt";
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(path), "input_" + request.getTaskId() + "_*.txt")) {
+            for (Path entry : stream) {
+                fileNames.add(entry.getFileName().toString());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        return inputFiles;
+        System.out.println("file names: " + fileNames);
+        return fileNames;
     }
 
     public Map<Integer, List<String>> findOutputFiles(RunRequest request) throws IOException {
@@ -69,32 +75,32 @@ public class Executor {
     }
 
     private Optional<String> createCodeFile(RunRequest request) {
-        String path = "/";
-        String fileName = "solution_" + request.getTaskId() + "_" + request.getAisId() + ".cpp";
-        Path fullPath = Paths.get(path + fileName);
+        String path = Executor.path + "/";
+        String fileName = "solution_" + request.getTaskId() + "_" + request.getAisId();
+        Path fullPath = Paths.get(path + fileName + ".cpp");
         try {
             Files.deleteIfExists(fullPath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         try {
+            Files.createDirectories(fullPath.getParent());
             Files.write(fullPath, request.getCode().getBytes());
         } catch (IOException e) {
             return Optional.empty();
         }
-
+        System.out.println("Code file created");
         return Optional.of(fileName);
     }
 
-    public void runCodeForEachTest(RunRequest request, Container container, Map<Integer, List<String>> inputFiles) throws IOException, InterruptedException {
-        String codeFileName = createCodeFile(request).orElseThrow(() -> new RuntimeException("Code file name is not set"));
+    public void runCodeForEachTest(RunRequest request, Container container, List<String> inputFiles) throws IOException, InterruptedException {
+        //String codeFileName = createCodeFile(request).orElseThrow(() -> new RuntimeException("Code file name is not set"));
         container.sendCode(codeFileName);
 
-        int index = 0;
-        while (inputFiles.containsKey(index)) {
-            List<String> inputs = inputFiles.get(index);
-            container.runCode(inputs);
-            index++;
+        for (String inputFileName : inputFiles) {
+            inputFileName = inputFileName.replace(".txt", "");
+            container.sendFile(inputFileName, "txt", "/inputs/" + request.getTaskId());
+            container.runCode(inputFileName);
         }
     }
 

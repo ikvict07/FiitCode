@@ -32,12 +32,17 @@ public class PythonContainer implements Container {
     }
 
     @Override
-    public void runCode(List<String> inputs) throws IOException, InterruptedException {
+    public void runCode(String inputFileName) throws IOException, InterruptedException {
 
     }
 
     @Override
     public void sendCode(String fileCodeName) throws IOException, InterruptedException {
+
+    }
+
+    @Override
+    public void sendFile(String fileName, String extension, String dir) throws IOException, InterruptedException {
 
     }
 }
