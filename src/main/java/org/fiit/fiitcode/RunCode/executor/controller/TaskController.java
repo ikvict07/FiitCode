@@ -2,6 +2,7 @@ package org.fiit.fiitcode.RunCode.executor.controller;
 
 import org.fiit.fiitcode.RunCode.executor.DTO.AddInputRequest;
 import org.fiit.fiitcode.RunCode.executor.service.Executor;
+import org.fiit.fiitcode.RunCode.executor.service.InputManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -14,10 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/task")
 public class TaskController {
     final Executor executor;
+    final InputManager inputManager;
 
     @Autowired
-    public TaskController(Executor executor) {
+    public TaskController(Executor executor, InputManager inputManager) {
         this.executor = executor;
+        this.inputManager = inputManager;
     }
 
     @GetMapping("/send-user-solution")
@@ -27,7 +30,7 @@ public class TaskController {
 
     @PostMapping("/add-input")
     public ResponseEntity<?> addInput(@RequestBody AddInputRequest addInputRequest) {
-        executor.addInput(addInputRequest);
+        inputManager.addInput(addInputRequest);
         return ResponseEntity.ok().build();
     }
 }

@@ -1,4 +1,4 @@
-package org.fiit.fiitcode.RunCode.executor.service;
+package org.fiit.fiitcode.RunCode.executor.service.container;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,7 +16,7 @@ public interface Container {
 
     void setContainerRunning(boolean containerRunning);
 
-    void runCode(String inputFileName) throws IOException, InterruptedException;
+    void runCode(String inputFileName, String outputFileName) throws IOException, InterruptedException;
 
     void sendCode(String fileName) throws IOException, InterruptedException;
 

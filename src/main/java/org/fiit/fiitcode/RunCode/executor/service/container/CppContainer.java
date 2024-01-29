@@ -1,4 +1,4 @@
-package org.fiit.fiitcode.RunCode.executor.service;
+package org.fiit.fiitcode.RunCode.executor.service.container;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -59,8 +59,8 @@ public class CppContainer implements Container {
     }
 
     @Override
-    public void runCode(String inputFileName) throws IOException, InterruptedException {
-        Process process = getProcess(inputFileName);
+    public void runCode(String inputFileName, String outputFileName) throws IOException, InterruptedException {
+        Process process = getProcessOfCodeExecution(inputFileName, outputFileName);
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line;
         System.out.println("Output of running command is:");
@@ -72,13 +72,14 @@ public class CppContainer implements Container {
         System.out.println("\nExited with error code : " + exitCode);
     }
 
-    private Process getProcess(String inputFileName) throws IOException {
+    private Process getProcessOfCodeExecution(String inputFileName, String outputFileName) throws IOException {
         if (!isContainerRunning) {
             throw new IllegalStateException("Container is not running");
         }
         String inputFilePath = "/" + inputFileName;
+        String outputFilePath = "/" + outputFileName;
         ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command("cmd.exe", "/c", "docker exec " + containerName + " /bin/bash -c \"g++ /" + codeFileName + ".cpp -o /" + codeFileName + " && /" + codeFileName + " < " + inputFilePath + ".txt" + "\"");
+        processBuilder.command("cmd.exe", "/c", "docker exec " + containerName + " /bin/bash -c \"g++ /" + codeFileName + ".cpp -o /" + codeFileName + " && /" + codeFileName + " < " + inputFilePath + ".txt > " + outputFilePath + ".txt\"");
         processBuilder.redirectErrorStream(true);
         Process process = processBuilder.start();
         return process;
@@ -117,23 +118,4 @@ public class CppContainer implements Container {
         process.waitFor();
     }
 
-    private void generateTxtFileInsideContainer(String fileName, String content) throws IOException {
-        ProcessBuilder processBuilder = new ProcessBuilder();
-        String command = "docker exec " + containerName + " /bin/bash -c \"echo -e \\\"" + content + "\\\" > /home/" + fileName + ".txt\"";
-        processBuilder.command("cmd.exe", "/c", command);
-        Process process = processBuilder.start();
-        try {
-            int exitCode = process.waitFor();
-            System.out.println("Exited with code: " + exitCode);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void deleteFileInsideContainer(String fileName) throws IOException, InterruptedException {
-        ProcessBuilder processBuilder = new ProcessBuilder();
-        String command = "docker exec " + containerName + " /bin/bash -c \"rm /" + fileName + "\"";
-        processBuilder.command("cmd.exe", "/c", command);
-        processBuilder.start().waitFor();
-    }
 }

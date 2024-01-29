@@ -1,7 +1,6 @@
-package org.fiit.fiitcode.RunCode.executor.service;
+package org.fiit.fiitcode.RunCode.executor.service.container;
 
 import java.io.IOException;
-import java.util.List;
 
 public class PythonContainer implements Container {
 
@@ -32,7 +31,7 @@ public class PythonContainer implements Container {
     }
 
     @Override
-    public void runCode(String inputFileName) throws IOException, InterruptedException {
+    public void runCode(String inputFileName, String outputFileName) throws IOException, InterruptedException {
 
     }
 
