@@ -1,12 +1,13 @@
 package org.fiit.fiitcode.RunCode.executor.service.container;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Random;
 
 public class CppContainer implements Container {
-    private static final String path = "C:/Users/ikvict/FiitCode/src/main/resources"; //TODO : change to relative path
     public final String containerName;
     private boolean isContainerRunning;
     private String codeFileName;
@@ -43,22 +44,6 @@ public class CppContainer implements Container {
     }
 
     @Override
-    public void sendCode(String codeFileName) throws IOException, InterruptedException {
-        if (!isContainerRunning) {
-            throw new IllegalStateException("Container is not running");
-        }
-        if (codeFileName == null) {
-            throw new IllegalStateException("Code file name is not set");
-        }
-
-        sendFile(codeFileName, "cpp", "");
-
-        // Add logging to list files in the Docker container's root directory
-        ProcessBuilder processBuilder = new ProcessBuilder();
-        executeLs(processBuilder);
-    }
-
-    @Override
     public void runCode(String inputFileName, String outputFileName) throws IOException, InterruptedException {
         Process process = getProcessOfCodeExecution(inputFileName, outputFileName);
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -86,9 +71,9 @@ public class CppContainer implements Container {
     }
 
     public void sendFile(String fileName, String extension, String dir) {
-        System.out.println("Sending file " + path + dir + "/" + fileName + "." + extension + " to container " + containerName);
+        System.out.println("Sending file " + dir + fileName + "." + extension + " to container " + containerName);
         ProcessBuilder processBuilder = new ProcessBuilder();
-        String command = "docker cp " + path + dir + "/" + fileName + "." + extension + " " + containerName + ":/" + fileName + "." + extension;
+        String command = "docker cp " + dir + fileName + "." + extension + " " + containerName + ":/" + fileName + "." + extension;
         processBuilder.command("cmd.exe", "/c", command);
         try {
             processBuilder.start().waitFor();
@@ -105,6 +90,21 @@ public class CppContainer implements Container {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String getContentFromFile(String fullFileName) throws IOException, InterruptedException {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        processBuilder.command("cmd.exe", "/c", "docker exec " + containerName + " cat " + fullFileName);
+        Process process = processBuilder.start();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        StringBuilder content = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            content.append(line);
+        }
+        process.waitFor();
+        return content.toString();
     }
 
     private void executeLs(ProcessBuilder processBuilder) throws IOException, InterruptedException {

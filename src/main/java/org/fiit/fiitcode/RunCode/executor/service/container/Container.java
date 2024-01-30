@@ -18,7 +18,7 @@ public interface Container {
 
     void runCode(String inputFileName, String outputFileName) throws IOException, InterruptedException;
 
-    void sendCode(String fileName) throws IOException, InterruptedException;
-
     void sendFile(String fileName, String extension, String dir) throws IOException, InterruptedException;
+
+    String getContentFromFile(String fullFileName) throws IOException, InterruptedException;
 }

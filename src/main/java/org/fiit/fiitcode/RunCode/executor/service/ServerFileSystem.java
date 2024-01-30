@@ -15,6 +15,7 @@ import java.util.*;
 public class ServerFileSystem {
     public Optional<String> createFile(String fileName, String extension, String dir, String content) {
         Path fullPath = Paths.get(dir + fileName + "." + extension);
+        System.out.println(dir + fileName + "." + extension);
         try {
             Files.deleteIfExists(fullPath);
         } catch (IOException e) {

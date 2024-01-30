@@ -15,8 +15,8 @@ import java.util.List;
 
 @Service
 public class InputManager {
-    @Value("$fiitcode.root.resources.inputs")
-    private static String INPUTS_PATH;
+    @Value("${fiitcode.root.resources.inputs}")
+    private String INPUTS_PATH;
     private final ServerFileSystem serverFileSystem;
 
     public InputManager(ServerFileSystem serverFileSystem) {
@@ -42,5 +42,8 @@ public class InputManager {
         }
         System.out.println("file names: " + fileNames);
         return fileNames;
+    }
+    public String getInputDir() {
+        return INPUTS_PATH;
     }
 }

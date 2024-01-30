@@ -36,12 +36,12 @@ public class PythonContainer implements Container {
     }
 
     @Override
-    public void sendCode(String fileCodeName) throws IOException, InterruptedException {
+    public void sendFile(String fileName, String extension, String dir) throws IOException, InterruptedException {
 
     }
 
     @Override
-    public void sendFile(String fileName, String extension, String dir) throws IOException, InterruptedException {
-
+    public String getContentFromFile(String fullFileName) throws IOException, InterruptedException {
+        return null;
     }
 }

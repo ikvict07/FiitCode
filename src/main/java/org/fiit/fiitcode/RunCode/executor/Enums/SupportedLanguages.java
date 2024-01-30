@@ -6,8 +6,8 @@ public enum SupportedLanguages {
 
     public String getExtension() {
         return switch (this) {
-            case Python -> ".py";
-            case Cpp -> ".cpp";
+            case Python -> "py";
+            case Cpp -> "cpp";
         };
     }
 }
